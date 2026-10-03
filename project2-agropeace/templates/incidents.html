@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h3>Incoming reports (verify before acting: false reports and rumours escalate conflict)</h3>
+<table><tr><th>#</th><th>Time</th><th>LGA</th><th>Type</th><th>Sev</th><th>Details</th><th>Source</th><th>Reporter</th><th>Credibility</th><th>Status</th><th>Action</th></tr>
+{% for r in rows %}<tr><td>{{ r.id }}</td><td>{{ fmt(r.ts) }}</td><td>{{ r.lga }}</td><td>{{ types[r.type][0] }}</td><td>{{ r.severity }}</td>
+<td>{{ r.description }}</td><td>{{ r.source }}</td><td>{{ r.reporter }}</td><td>{{ r.credibility }}</td>
+<td>{{ {1:'confirmed',0:'pending',-1:'rejected'}[r.verified] }}</td>
+<td style="white-space:nowrap"><form method="post" action="/incidents/{{ r.id }}/confirm" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Confirm</button></form>
+<form method="post" action="/incidents/{{ r.id }}/reject" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="alt">False</button></form>
+{% if rank>=3 and r.reporter_enc %}<form method="post" action="/incidents/{{ r.id }}/reveal" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="reason" value="follow-up"><button>Reveal</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="11">No live reports yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

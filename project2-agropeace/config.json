@@ -1,0 +1,25 @@
+{
+  "project": "AgroPeace: GIS Early Warning and Response for Farmer-Herder Conflict",
+  "database": "data/agropeace.db",
+  "model_path": "data/risk_model.pkl",
+  "risk_interval_seconds": 30,
+  "security": {
+    "data_key_env": "AGROPEACE_DATA_KEY",
+    "device_secret_env": "AGROPEACE_DEVICE_SECRET",
+    "secret_key_env": "AGROPEACE_SECRET_KEY",
+    "store_reporter_phone": true,
+    "max_reports_per_hour": 5
+  },
+  "alerts": {
+    "min_level_score": 50,
+    "cooldown_minutes": 60,
+    "route_deviation_km": 15,
+    "sms_gateway": {
+      "enabled": false,
+      "url": "https://api.ng.termii.com/api/sms/send",
+      "api_key_env": "AGROPEACE_SMS_KEY",
+      "sender_id": "AgroPeace"
+    }
+  },
+  "dashboard": {"host": "127.0.0.1", "port": 5050}
+}

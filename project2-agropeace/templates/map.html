@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="/static/leaflet/leaflet.css">
+<script src="/static/leaflet/leaflet.js"></script>
+<style>
+.wrap{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(300px,1fr);gap:14px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+#map{height:640px;border-radius:10px;border:1px solid var(--line);background:#dfe9f3}
+.side{display:flex;flex-direction:column;gap:12px;max-height:640px;overflow:auto}
+.legend span{display:inline-block;margin-right:10px;font-size:12px}
+.cow{font-size:20px}
+</style>
+{% endblock %}
+{% block body %}
+<div class="legend card" style="margin-bottom:10px">
+<span><span class="lvl Low">Low</span> <span class="lvl Moderate">Moderate</span> <span class="lvl High">High</span> <span class="lvl Severe">Severe</span> = LGA risk</span>
+<span>&#128004; herd (GPS)</span><span style="color:#2e7d32">&#9632; farmland</span><span style="color:#8d6e63">&#9632; grazing reserve</span>
+<span style="color:#ef6c00">- - stock route</span><span style="color:#d32f2f">&#9679; live report</span><span id="updated" style="float:right;color:var(--muted)"></span>
+</div>
+<div class="wrap">
+ <div id="map"></div>
+ <div class="side">
+  <div class="card"><h3 style="margin-top:0">Highest risk LGAs</h3><table id="risk"></table></div>
+  <div class="card"><h3 style="margin-top:0">Selected LGA</h3><div id="detail">Click an LGA circle on the map.</div><svg id="trend" viewBox="0 0 300 60" style="width:100%;height:60px"></svg></div>
+  <div class="card"><h3 style="margin-top:0">Alerts dispatched</h3><table id="alerts"></table></div>
+  <div class="card"><h3 style="margin-top:0">Mediation cases</h3><div id="cases"></div></div>
+ </div>
+</div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COL={Low:'#43a047',Moderate:'#fdd835',High:'#fb8c00',Severe:'#e53935'};
+const hasL=typeof L!=='undefined';
+let map,layers={},risks=[];
+if(hasL){
+ map=L.map('map').setView([8.4,8.6],7);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);
+ ['zones','history','risk','incidents','herds'].forEach(k=>layers[k]=L.layerGroup().addTo(map));
+ L.control.layers(null,{'Farmland, reserves, routes':layers.zones,'90-day incident history':layers.history,'LGA risk':layers.risk,'Live reports':layers.incidents,'Herds (GPS)':layers.herds}).addTo(map);
+ fetch('/api/zones').then(r=>r.json()).then(fc=>{
+  L.geoJSON(fc,{style:f=>({farmland:{color:'#2e7d32',weight:1,fillOpacity:.35},grazing_reserve:{color:'#8d6e63',weight:1,fillOpacity:.3},stock_route:{color:'#ef6c00',weight:3,dashArray:'8 6'}}[f.properties.kind]||{}),
+   pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:5,color:'#1565c0',fillOpacity:.9}),
+   onEachFeature:(f,l)=>l.bindTooltip(esc(f.properties.name))}).addTo(layers.zones);
+ });
+}
+function select(name){
+ const r=risks.find(x=>x.lga==name); if(!r) return;
+ document.getElementById('detail').innerHTML=`<b>${esc(r.lga)}</b> (${esc(r.state)}) <span class="lvl ${r.level}">${r.level} ${r.score}</span>
+  <br><small>Rule index ${r.rule_score} &middot; ML probability (7 days) ${r.ml_prob==null?'n/a':(r.ml_prob*100).toFixed(0)+'%'}</small>
+  <br><b>Drivers:</b><ul style="margin:4px 0;padding-left:18px">${r.drivers.map(d=>`<li>${esc(d[0])}</li>`).join('')}</ul>
+  <small>Herds near farms: ${r.herds.herds_near}, inside farms: ${r.herds.herds_inside}; NDVI anomaly ${r.features.ndvi_anom}</small>`;
+ fetch('/api/lga/'+encodeURIComponent(name)+'/trend').then(x=>x.json()).then(rows=>{
+  const s=document.getElementById('trend'); if(rows.length<2){s.innerHTML='';return;}
+  const pts=rows.map((p,i)=>`${(i/(rows.length-1)*300).toFixed(1)},${(58-p.score*0.56).toFixed(1)}`).join(' ');
+  s.innerHTML=`<polyline fill="none" stroke="#1b5e20" stroke-width="2" points="${pts}"/>`;});
+}
+function drawFallback(d){ // offline map: plain SVG projection when map tiles cannot load
+ const el=document.getElementById('map');const W=el.clientWidth||800,H=640;
+ const X=lon=>(lon-2.5)/(13-2.5)*W,Y=lat=>H-(lat-6)/(11-6)*H;
+ let g=`<svg width="${W}" height="${H}"><text x="10" y="20" fill="#555">Offline view (map tiles unavailable)</text>`;
+ d.risks.forEach(r=>g+=`<circle cx="${X(r.lon)}" cy="${Y(r.lat)}" r="${6+r.score/6}" fill="${COL[r.level]}" fill-opacity=".7" onclick="select('${esc(r.lga)}')"><title>${esc(r.lga)} ${r.score}</title></circle><text x="${X(r.lon)+8}" y="${Y(r.lat)}" font-size="10">${esc(r.lga)}</text>`);
+ d.herds.forEach(h=>g+=`<text x="${X(h.lon)}" y="${Y(h.lat)}" font-size="16">&#128004;</text>`);
+ el.innerHTML=g+'</svg>';
+}
+async function refresh(){
+ const r=await fetch('/api/state'); if(!r.ok) return; const d=await r.json(); risks=d.risks;
+ document.getElementById('updated').textContent='Risk computed '+(d.risk_ts?new Date(d.risk_ts*1000).toLocaleTimeString():'-')+' · auto-refresh 5s';
+ document.getElementById('risk').innerHTML='<tr><th>LGA</th><th>Risk</th><th>Top driver</th></tr>'+d.risks.slice(0,10).map(r=>
+  `<tr style="cursor:pointer" onclick="select('${esc(r.lga)}')"><td>${esc(r.lga)}<br><small>${esc(r.state)}</small></td><td><span class="lvl ${r.level}">${r.score}</span></td><td><small>${esc((r.drivers[0]||[''])[0])}</small></td></tr>`).join('');
+ document.getElementById('alerts').innerHTML=d.alerts.map(a=>`<tr><td><span class="lvl ${esc(a.level)}">${esc(a.level)}</span><br><small>${new Date(a.ts*1000).toLocaleTimeString()}</small></td><td><b>${esc(a.lga)}</b> &middot; ${esc(a.kind)}<br><small>${esc(a.message)}</small><br><small style="color:var(--muted)">To: ${esc(a.recipients)}</small></td></tr>`).join('')||'<tr><td>No alerts</td></tr>';
+ document.getElementById('cases').innerHTML=d.cases.map(c=>`${esc(c.status)}: <b>${c.n}</b>`).join(' &middot; ')||'No cases';
+ if(!hasL){drawFallback(d);return;}
+ layers.risk.clearLayers();layers.incidents.clearLayers();layers.herds.clearLayers();layers.history.clearLayers();
+ d.history.forEach(h=>L.circleMarker([h.lat,h.lon],{radius:3,stroke:false,fillColor:'#6a1b9a',fillOpacity:.25}).addTo(layers.history));
+ d.risks.forEach(r=>L.circle([r.lat,r.lon],{radius:4000+r.score*120,color:COL[r.level],fillColor:COL[r.level],fillOpacity:.45,weight:2})
+  .bindTooltip(`${esc(r.lga)}: ${r.level} (${r.score})`).on('click',()=>select(r.lga)).addTo(layers.risk));
+ d.incidents.forEach(i=>L.circleMarker([i.lat,i.lon],{radius:6,color:'#b71c1c',fillColor:'#d32f2f',fillOpacity:.9})
+  .bindPopup(`<b>${esc(i.type)}</b> in ${esc(i.lga)}<br>${new Date(i.ts*1000).toLocaleString()}<br>source: ${esc(i.source)}, ${i.verified==1?'verified':'unverified'}`).addTo(layers.incidents));
+ Object.entries(d.trails).forEach(([id,pts])=>L.polyline(pts,{color:'#5d4037',weight:2,opacity:.7}).addTo(layers.herds));
+ d.herds.forEach(h=>L.marker([h.lat,h.lon],{icon:L.divIcon({className:'cow',html:'&#128004;',iconSize:[22,22]})})
+  .bindTooltip(`${esc(h.herd_id)} (${h.heads} cattle)`).addTo(layers.herds));
+}
+refresh(); setInterval(refresh,5000);
+</script>
+{% endblock %}

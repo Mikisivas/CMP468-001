@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgroPeace Early Warning</title>
+<style>
+:root{--bg:#f4f7f2;--card:#fff;--text:#1f2a1f;--muted:#5f6f5f;--brand:#1b5e20;--line:#dfe6db}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:10px 18px;background:var(--brand);color:#fff}
+header a{color:#fff;text-decoration:none;margin-right:14px}header b{font-size:18px}
+main{padding:16px;max-width:1500px;margin:auto}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted)}
+button,.btn{background:var(--brand);color:#fff;border:0;border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:600}
+button.alt{background:#b71c1c}input,select,textarea{padding:7px;border:1px solid #c9d3c4;border-radius:6px;font:inherit;width:100%}
+.flash{background:#e8f5e9;border:1px solid #a5d6a7;padding:9px;border-radius:6px;margin-bottom:10px}
+.lvl{padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:#000}
+.Low{background:#66bb6a}.Moderate{background:#fdd835}.High{background:#fb8c00}.Severe{background:#e53935;color:#fff}
+</style>{% block head %}{% endblock %}</head>
+<body><header><div><b>AgroPeace</b> &middot; GIS Early Warning &amp; Response for Farmer-Herder Conflict</div>
+<nav>{% if user %}<a href="/">Live map</a>{% if rank>=2 %}<a href="/incidents">Incidents</a>{% endif %}{% if rank>=1 %}<a href="/cases">Mediation cases</a>{% endif %}
+{% if rank>=3 %}<a href="/audit">Audit</a>{% endif %}<a href="/report">Public report form</a><a href="/logout">Logout ({{ user }}, {{ role }})</a>
+{% else %}<a href="/report">Report an incident</a><a href="/login">Staff login</a>{% endif %}</nav></header>
+<main>{% with m = get_flashed_messages() %}{% for x in m %}<div class="flash">{{ x }}</div>{% endfor %}{% endwith %}
+{% block body %}{% endblock %}</main></body></html>

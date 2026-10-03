@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h3>Conflict resolution cases (auto-opened for incidents with severity 3 and above)</h3>
+<table><tr><th>Case</th><th>Opened</th><th>LGA</th><th>Incident</th><th>Update</th></tr>
+{% for c in rows %}<tr><td>#{{ c.id }}</td><td>{{ fmt(c.created) }}</td><td>{{ c.lga }}</td><td>{{ types[c.type][0] if c.type else '' }}<br><small>{{ c.description }}</small></td>
+<td><form method="post" style="display:grid;grid-template-columns:1fr 1fr 2fr 1fr auto;gap:6px">
+<input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ c.id }}">
+<select name="status">{% for s in ['reported','verified','mediation_scheduled','in_mediation','resolved','escalated'] %}<option {{ 'selected' if s==c.status }}>{{ s }}</option>{% endfor %}</select>
+<input name="mediator" value="{{ c.mediator or '' }}" placeholder="Mediator (e.g. Emir's council, Tor Tiv rep)">
+<input name="notes" value="{{ c.notes or '' }}" placeholder="Resolution notes">
+<input name="compensation" value="{{ c.compensation_ngn or 0 }}" placeholder="Compensation NGN">
+<button>Save</button></form></td></tr>
+{% else %}<tr><td colspan="5">No cases.</td></tr>{% endfor %}</table></div>
+{% endblock %}

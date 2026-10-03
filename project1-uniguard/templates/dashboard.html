@@ -1,0 +1,64 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid">
+ <div class="card"><h3>CPU</h3><div class="big" id="cpu">-</div></div>
+ <div class="card"><h3>Memory</h3><div class="big" id="mem">-</div></div>
+ <div class="card"><h3>Disk</h3><div class="big" id="disk">-</div></div>
+ <div class="card"><h3>Last good backup (RPO target)</h3><div class="big" id="age">-</div></div>
+ <div class="card"><h3>Ransomware canaries</h3><div class="big" id="canary">-</div></div>
+ <div class="card"><h3>Open alerts</h3><div class="big" id="open">-</div></div>
+</div>
+{% if role == 'admin' %}
+<div class="row"><div class="card">
+<form method="post" action="/action/backup" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Run backup now</button></form>
+<form method="post" action="/action/verify" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Verify integrity</button></form>
+<form method="post" action="/action/ack" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Acknowledge alerts</button></form>
+<a class="btn" href="/snapshots">Restore&hellip;</a>
+</div></div>
+{% endif %}
+<div class="row">
+ <div class="card"><h3>CPU and memory (last hour)</h3><svg id="chart" viewBox="0 0 600 200" style="width:100%;height:220px"></svg><div style="font-size:12px"><span style="color:#38bdf8">&#9632; CPU %</span> &nbsp; <span style="color:#a78bfa">&#9632; Memory %</span></div></div>
+ <div class="card"><h3>Services</h3><table id="svc"><tr><th>Service</th><th>Status</th><th>Latency</th><th>24h uptime</th></tr></table></div>
+</div>
+<div class="row">
+ <div class="card"><h3>Alerts</h3><table id="alerts"></table></div>
+ <div class="card"><h3>Backup jobs</h3><table id="backups"></table><h3 style="margin-top:14px">Restores (measured RTO)</h3><table id="restores"></table></div>
+</div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const t=ts=>new Date(ts*1000).toLocaleTimeString();
+const cls=(v,w,b)=>v>=b?'bad':v>=w?'warn':'ok';
+// Plain SVG chart: works offline, no CDN needed on a campus LAN.
+function drawChart(series){
+ const svg=document.getElementById('chart'),W=600,H=200,P=28;
+ const lines=[['cpu_percent','#38bdf8'],['memory_percent','#a78bfa']];
+ const all=series.map(s=>s.ts); if(!all.length){svg.innerHTML='<text x="20" y="100" fill="#94a3b8">Waiting for data...</text>';return;}
+ const t0=Math.min(...all),t1=Math.max(...all)||t0+1;
+ const X=ts=>P+(W-2*P)*(ts-t0)/Math.max(1,t1-t0),Y=v=>H-P-(H-2*P)*v/100;
+ let g='';[0,25,50,75,100].forEach(v=>g+=`<line x1="${P}" x2="${W-P}" y1="${Y(v)}" y2="${Y(v)}" stroke="#334155"/><text x="2" y="${Y(v)+4}" fill="#94a3b8" font-size="10">${v}</text>`);
+ lines.forEach(([n,c])=>{const pts=series.filter(s=>s.name==n).map(s=>X(s.ts).toFixed(1)+','+Y(s.value).toFixed(1)).join(' ');g+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts}"/>`;});
+ svg.innerHTML=g;
+}
+async function refresh(){
+ const r=await fetch('/api/status'); if(!r.ok) return; const d=await r.json();
+ const L=d.latest, disk=Object.keys(L).find(k=>k.startsWith('disk_percent'));
+ const set=(id,txt,c)=>{const e=document.getElementById(id);e.textContent=txt;e.className='big '+(c||'');};
+ set('cpu',(L.cpu_percent??0).toFixed(1)+'%',cls(L.cpu_percent,70,85));
+ set('mem',(L.memory_percent??0).toFixed(1)+'%',cls(L.memory_percent,75,90));
+ set('disk',disk?L[disk].toFixed(1)+'%':'-',cls(L[disk],75,90));
+ set('age',d.backup_age_min==null?'never':Math.round(d.backup_age_min)+' min ('+d.rpo+')',d.backup_age_min==null||d.backup_age_min>d.rpo?'bad':'ok');
+ set('canary',d.canary.tripped?'TRIPPED':'Intact',d.canary.tripped?'bad':'ok');
+ set('open',d.open_alerts,d.open_alerts?'warn':'ok');
+ const up={};d.uptime.forEach(u=>up[u.service]=u.pct);
+ document.getElementById('svc').innerHTML='<tr><th>Service</th><th>Status</th><th>Latency</th><th>24h uptime</th></tr>'+
+  d.services.map(s=>`<tr><td>${esc(s.service)}</td><td class="${s.ok?'ok':'bad'}">${s.ok?'UP':'DOWN'}</td><td>${s.latency_ms} ms</td><td>${(up[s.service]??0).toFixed(1)}%</td></tr>`).join('');
+ document.getElementById('alerts').innerHTML='<tr><th>Time</th><th>Severity</th><th>Source</th><th>Message</th></tr>'+
+  d.alerts.map(a=>`<tr style="opacity:${a.acknowledged?0.5:1}"><td>${t(a.ts)}</td><td><span class="pill ${esc(a.severity)}">${esc(a.severity)}</span></td><td>${esc(a.source)}</td><td>${esc(a.message)}</td></tr>`).join('');
+ document.getElementById('backups').innerHTML='<tr><th>Time</th><th>Status</th><th>Files</th><th>New objects</th><th>Duration</th></tr>'+
+  d.backups.map(b=>`<tr><td>${t(b.ts)}</td><td class="${b.status.startsWith('ok')?'ok':'bad'}">${esc(b.status)}</td><td>${b.files}</td><td>${b.new_objects}</td><td>${b.duration_s.toFixed(2)}s</td></tr>`).join('');
+ document.getElementById('restores').innerHTML='<tr><th>Time</th><th>Snapshot</th><th>Files</th><th>RTO</th></tr>'+
+  d.restores.map(x=>`<tr><td>${t(x.ts)}</td><td>${esc(x.snapshot_id)}</td><td>${x.files}</td><td>${x.duration_s.toFixed(2)}s</td></tr>`).join('');
+ drawChart(d.series);
+}
+refresh(); setInterval(refresh,5000);
+</script>
+{% endblock %}

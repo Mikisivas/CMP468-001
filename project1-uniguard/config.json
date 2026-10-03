@@ -1,0 +1,89 @@
+{
+  "institution": "Demo Federal University (CMP 468 Project)",
+  "host_name": "ict-server-01",
+  "database": "data/uniguard.db",
+  "log_file": "data/uniguard.log",
+  "monitor": {
+    "interval_seconds": 15,
+    "disk_paths": ["/"],
+    "thresholds": {
+      "cpu_percent": 85,
+      "memory_percent": 90,
+      "disk_percent": 90,
+      "battery_percent": 30
+    },
+    "anomaly_window": 30,
+    "anomaly_z": 3.0,
+    "services": [
+      {
+        "name": "Student Portal",
+        "type": "http",
+        "url": "http://127.0.0.1:8081/health",
+        "timeout": 3,
+        "restart_command": "python simulate.py portal --background"
+      },
+      {
+        "name": "Result Database (TCP)",
+        "type": "tcp",
+        "host": "127.0.0.1",
+        "port": 8081,
+        "timeout": 3
+      }
+    ]
+  },
+  "backup": {
+    "sources": ["sample_data"],
+    "repository": "data/repository",
+    "passphrase_env": "UNIGUARD_PASSPHRASE",
+    "interval_minutes": 30,
+    "rpo_minutes": 60,
+    "exclude_extensions": [".tmp", ".lock", ".locked"],
+    "retention": {"keep_last": 10, "keep_daily": 7, "keep_weekly": 4, "keep_monthly": 6},
+    "replicas": [
+      {"name": "Second disk / NAS", "path": "data/replica_nas", "offsite": false},
+      {"name": "Offsite (other campus / cloud bucket mount)", "path": "data/replica_offsite", "offsite": true}
+    ],
+    "offsite_window": "00:00-23:59"
+  },
+  "ransomware_guard": {
+    "enabled": true,
+    "canary_dir": "sample_data/.canary",
+    "entropy_threshold": 7.2,
+    "max_suspicious_files": 3
+  },
+  "alerts": {
+    "cooldown_seconds": 600,
+    "channels": {
+      "email": {
+        "enabled": false,
+        "smtp_host": "smtp.gmail.com",
+        "smtp_port": 587,
+        "username": "ict-alerts@example.edu.ng",
+        "password_env": "UNIGUARD_SMTP_PASSWORD",
+        "from": "ict-alerts@example.edu.ng",
+        "to": ["sysadmin@example.edu.ng"],
+        "severities": ["critical", "warning"]
+      },
+      "telegram": {
+        "enabled": false,
+        "token_env": "UNIGUARD_TELEGRAM_TOKEN",
+        "chat_id": "123456789",
+        "severities": ["critical", "warning"]
+      },
+      "sms": {
+        "enabled": false,
+        "url": "https://api.ng.termii.com/api/sms/send",
+        "api_key_env": "UNIGUARD_SMS_KEY",
+        "sender_id": "UniGuard",
+        "to": "2348000000000",
+        "severities": ["critical"]
+      }
+    }
+  },
+  "dashboard": {
+    "host": "127.0.0.1",
+    "port": 5000,
+    "secret_key_env": "UNIGUARD_SECRET_KEY"
+  },
+  "users": {}
+}

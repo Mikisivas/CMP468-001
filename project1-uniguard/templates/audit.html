@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h3>Tamper-evident audit log</h3>
+<p class="{{ 'ok' if chain_ok else 'bad' }}">Hash chain: {{ 'INTACT' if chain_ok else 'BROKEN at entry %s'|format(bad) }}</p>
+<table><tr><th>#</th><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th><th>Entry hash</th></tr>
+{% for r in rows %}<tr><td>{{ r.id }}</td><td>{{ fmt(r.ts) }}</td><td>{{ r.actor }}</td><td>{{ r.action }}</td><td>{{ r.detail }}</td><td><code>{{ r.entry_hash[:16] }}&hellip;</code></td></tr>{% endfor %}
+</table></div>
+{% endblock %}
