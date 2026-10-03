@@ -2,7 +2,7 @@
 
 ## 1. Slide outline (10 to 12 minutes per project)
 
-### Project 1: UniGuard
+### Project 1: VarsityShield
 1. Title, your name, matric number.
 2. Problem in one picture: a Nigerian university loses a semester of results to ransomware. Cite Olugbile et al. (2025): 65% of 20 universities in the lowest readiness tier.
 3. Aim and 7 objectives.
@@ -14,7 +14,7 @@
 9. Mapping to CMP 468 course outline.
 10. Recommendations and limitations.
 
-### Project 2: AgroPeace
+### Project 2: Zaman Lafiya
 1. Title.
 2. Problem: Nnaji et al. (2022), conflict severity raises food insecurity in 401 households. Late warning, weak response, informants at risk.
 3. Aim and objectives.
@@ -30,7 +30,7 @@ Tip: record a screen video of each demo the night before. If the projector lapto
 
 ## 2. Likely questions and short answers
 
-### UniGuard
+### VarsityShield
 **Why AES-GCM instead of AES-CBC?**
 GCM gives encryption and an authentication tag together. A single changed byte makes decryption fail, so tampering is detected. CBC alone does not detect tampering.
 
@@ -41,7 +41,7 @@ Then anyone who sees the repository can check whether a known file (for example 
 Objects are read-only, snapshots are hash-chained, and replicas sit on another disk and offsite. The policy requires one offline or object-locked copy. An attacker with admin rights can delete the local repository, but not the offline copy.
 
 **Entropy checks fail on ZIP and JPEG files. How do you handle them?**
-For those formats UniGuard checks the file signature (for example `PK` for DOCX, `%PDF` for PDF) and relies on canary files.
+For those formats VarsityShield checks the file signature (for example `PK` for DOCX, `%PDF` for PDF) and relies on canary files.
 
 **How did you measure RTO and RPO?**
 `simulate.py drill` times the restore (RTO) and the gap between the last clean snapshot and the attack (RPO), and confirms all files are byte-identical by SHA-256.
@@ -55,7 +55,7 @@ For 9 MB, yes. For a 200 GB server, restore time depends on disk and network spe
 **Which standard does this follow?**
 NIST CSF 2.0 Recover function, ISO/IEC 27001:2022 control 8.13 (information backup), and the NDPA 2023.
 
-### AgroPeace
+### Zaman Lafiya
 **Your data is synthetic. Why should we trust the model?**
 The synthetic data validates the pipeline. The `import-acled` command loads real ACLED events and `train` re-evaluates with the same time-based split. I report the honest AUC with a naive baseline instead of accuracy.
 
@@ -84,7 +84,7 @@ Reports describe events (crop damage, theft, threats), not ethnicity. Alerts go 
 SQLite needs no server for the prototype. The geometry functions are simple and documented. PostGIS is the recommended upgrade for statewide use.
 
 **Why is loading a pickle file a security issue?**
-Unpickling can execute code. AgroPeace stores the model's SHA-256 at training time and refuses to load a file whose hash differs.
+Unpickling can execute code. Zaman Lafiya stores the model's SHA-256 at training time and refuses to load a file whose hash differs.
 
 ## 3. Checklist for the day
 - [ ] Both projects run from a fresh folder on the presentation laptop (do Part A of each README).

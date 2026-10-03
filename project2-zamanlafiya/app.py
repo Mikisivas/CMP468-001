@@ -1,4 +1,4 @@
-"""AgroPeace web application: live GIS dashboard, incident intake (web, SMS, USSD),
+"""Zaman Lafiya web application: live GIS dashboard, incident intake (web, SMS, USSD),
 herd GPS ingestion with geofencing, case management for mediation, and alerting.
 
 Run:  python app.py   then open http://127.0.0.1:5050
@@ -169,15 +169,15 @@ def api_sms():
     phone, text = request.form.get("from", ""), request.form.get("text", "")
     parsed = core.parse_sms(text)
     if not parsed:
-        return "Format: AP <LGA> <CROP|RUSTLE|COW|THREAT|RUMOUR|ROUTE|ATTACK|KILL|FLEE> <details>", 200
+        return "Format: ZL <LGA> <CROP|RUSTLE|COW|THREAT|RUMOUR|ROUTE|ATTACK|KILL|FLEE> <details>", 200
     lga = core.resolve_lga_name(cfg, parsed["lga"])
     if not lga:
-        return f"Unknown LGA '{parsed['lga']}'. Example: AP Guma CROP cows in yam farm", 200
+        return f"Unknown LGA '{parsed['lga']}'. Example: ZL Guma CROP cows in yam farm", 200
     try:
         iid = core.add_incident(cfg, lga, parsed["type"], parsed["description"], "sms", phone=phone)
     except PermissionError:
         return "Too many reports from this number. Please call the peace committee.", 200
-    return f"AgroPeace: report #{iid} received for {lga}. Stay safe.", 200
+    return f"Zaman Lafiya: report #{iid} received for {lga}. Stay safe.", 200
 
 
 @app.route("/api/ussd", methods=["POST"])
@@ -187,7 +187,7 @@ def api_ussd():
     steps = [s for s in text.split("*")] if text else []
     types = list(core.INCIDENT_TYPES)
     if not steps:
-        return "CON AgroPeace\n1. Report incident\n2. Check risk in my LGA"
+        return "CON Zaman Lafiya\n1. Report incident\n2. Check risk in my LGA"
     if steps[0] == "2":
         if len(steps) == 1:
             return "CON Enter your LGA name:"
@@ -310,6 +310,6 @@ if __name__ == "__main__":
     if not os.path.exists(cfg["database"]):
         raise SystemExit("Run `python manage.py init` first.")
     threading.Thread(target=risk_loop, daemon=True).start()
-    print(f"AgroPeace on http://{cfg['dashboard']['host']}:{cfg['dashboard']['port']}  "
+    print(f"Zaman Lafiya on http://{cfg['dashboard']['host']}:{cfg['dashboard']['port']}  "
           f"(public report form at /report)")
     app.run(host=cfg["dashboard"]["host"], port=cfg["dashboard"]["port"], debug=False, use_reloader=False)

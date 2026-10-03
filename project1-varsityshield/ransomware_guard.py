@@ -27,7 +27,7 @@ MAGIC = {
     ".xls": [b"\xd0\xcf\x11\xe0"],
 }
 CANARY_NAMES = ["000_bursary_salary_schedule.csv", "zzz_senate_results_master.txt"]
-CANARY_TEXT = ("CANARY FILE. DO NOT EDIT. This decoy is watched by UniGuard. "
+CANARY_TEXT = ("CANARY FILE. DO NOT EDIT. This decoy is watched by VarsityShield. "
                "Any change raises a critical ransomware alert.\n") * 20
 
 

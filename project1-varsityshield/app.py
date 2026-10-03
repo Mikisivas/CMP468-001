@@ -1,4 +1,4 @@
-"""UniGuard web dashboard and scheduler.
+"""VarsityShield web dashboard and scheduler.
 
 Run:  python app.py      then open http://127.0.0.1:5000
 """
@@ -194,5 +194,5 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(cfg["backup"]["repository"], backup_engine.KEYINFO)):
         raise SystemExit("Run `python cli.py init` first.")
     start_scheduler()
-    log(cfg, f"UniGuard dashboard on http://{cfg['dashboard']['host']}:{cfg['dashboard']['port']}")
+    log(cfg, f"VarsityShield dashboard on http://{cfg['dashboard']['host']}:{cfg['dashboard']['port']}")
     app.run(host=cfg["dashboard"]["host"], port=cfg["dashboard"]["port"], debug=False, use_reloader=False)

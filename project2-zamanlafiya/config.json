@@ -1,12 +1,12 @@
 {
-  "project": "AgroPeace: GIS Early Warning and Response for Farmer-Herder Conflict",
-  "database": "data/agropeace.db",
+  "project": "Zaman Lafiya: GIS Early Warning and Response for Farmer-Herder Conflict",
+  "database": "data/zamanlafiya.db",
   "model_path": "data/risk_model.pkl",
   "risk_interval_seconds": 30,
   "security": {
-    "data_key_env": "AGROPEACE_DATA_KEY",
-    "device_secret_env": "AGROPEACE_DEVICE_SECRET",
-    "secret_key_env": "AGROPEACE_SECRET_KEY",
+    "data_key_env": "ZAMANLAFIYA_DATA_KEY",
+    "device_secret_env": "ZAMANLAFIYA_DEVICE_SECRET",
+    "secret_key_env": "ZAMANLAFIYA_SECRET_KEY",
     "store_reporter_phone": true,
     "max_reports_per_hour": 5
   },
@@ -17,8 +17,8 @@
     "sms_gateway": {
       "enabled": false,
       "url": "https://api.ng.termii.com/api/sms/send",
-      "api_key_env": "AGROPEACE_SMS_KEY",
-      "sender_id": "AgroPeace"
+      "api_key_env": "ZAMANLAFIYA_SMS_KEY",
+      "sender_id": "ZamanLafiya"
     }
   },
   "dashboard": {"host": "127.0.0.1", "port": 5050}

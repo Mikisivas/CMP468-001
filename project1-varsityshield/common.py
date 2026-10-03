@@ -1,4 +1,4 @@
-"""Shared helpers for UniGuard: config, database, audit log and alert dispatch."""
+"""Shared helpers for VarsityShield: config, database, audit log and alert dispatch."""
 import hashlib
 import json
 import os
@@ -12,7 +12,7 @@ import urllib.request
 from email.message import EmailMessage
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.environ.get("UNIGUARD_CONFIG", os.path.join(BASE_DIR, "config.json"))
+CONFIG_PATH = os.environ.get("VSHIELD_CONFIG", os.path.join(BASE_DIR, "config.json"))
 
 _db_lock = threading.Lock()
 
@@ -143,7 +143,7 @@ def raise_alert(cfg, severity, source, message, alert_key=None):
     _last_sent[key] = now
     db_exec(cfg, "INSERT INTO alerts(ts, severity, source, message, alert_key) VALUES (?,?,?,?,?)",
             (now, severity, source, message, key))
-    text = f"[UniGuard {severity.upper()}] {cfg['institution']} | {source}: {message}"
+    text = f"[VarsityShield {severity.upper()}] {cfg['institution']} | {source}: {message}"
     log(cfg, text)
     channels = cfg["alerts"]["channels"]
     for name, sender in (("email", _send_email), ("telegram", _send_telegram), ("sms", _send_sms)):
@@ -168,12 +168,12 @@ def _send_email(ch, text):
     msg.set_content(text)
     with smtplib.SMTP(ch["smtp_host"], ch.get("smtp_port", 587), timeout=15) as s:
         s.starttls(context=ssl.create_default_context())
-        s.login(ch["username"], os.environ.get(ch.get("password_env", "UNIGUARD_SMTP_PASSWORD"), ""))
+        s.login(ch["username"], os.environ.get(ch.get("password_env", "VSHIELD_SMTP_PASSWORD"), ""))
         s.send_message(msg)
 
 
 def _send_telegram(ch, text):
-    token = os.environ.get(ch.get("token_env", "UNIGUARD_TELEGRAM_TOKEN"), "")
+    token = os.environ.get(ch.get("token_env", "VSHIELD_TELEGRAM_TOKEN"), "")
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = urllib.parse.urlencode({"chat_id": ch["chat_id"], "text": text}).encode()
     urllib.request.urlopen(url, data=data, timeout=15).read()
@@ -181,8 +181,8 @@ def _send_telegram(ch, text):
 
 def _send_sms(ch, text):
     """Generic SMS gateway webhook (works with Termii or Africa's Talking style APIs)."""
-    payload = json.dumps({"to": ch["to"], "sms": text[:300], "from": ch.get("sender_id", "UniGuard"),
-                          "api_key": os.environ.get(ch.get("api_key_env", "UNIGUARD_SMS_KEY"), "")}).encode()
+    payload = json.dumps({"to": ch["to"], "sms": text[:300], "from": ch.get("sender_id", "VShield"),
+                          "api_key": os.environ.get(ch.get("api_key_env", "VSHIELD_SMS_KEY"), "")}).encode()
     req = urllib.request.Request(ch["url"], data=payload, headers={"Content-Type": "application/json"})
     urllib.request.urlopen(req, timeout=15).read()
 

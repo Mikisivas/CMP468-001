@@ -1,6 +1,6 @@
-# AgroPeace: GIS Early Warning and Real-Time Response for Farmer-Herder Conflict
+# Zaman Lafiya: GIS Early Warning and Real-Time Response for Farmer-Herder Conflict
 
-CMP 468 (Computer Security) project 2. AgroPeace maps farmland, grazing reserves and stock routes, takes
+CMP 468 (Computer Security) project 2. Zaman Lafiya maps farmland, grazing reserves and stock routes, takes
 incident reports by web, SMS and USSD, tracks herds with signed GPS pings, scores conflict risk per LGA,
 sends multilingual alerts, and tracks mediation cases. Informant phone numbers are encrypted.
 
@@ -16,7 +16,7 @@ Check: `python --version` (use `python3` on Linux/macOS).
 
 ### Step 2. Open a terminal in the project folder
 ```
-cd C:\CMP468\project2-agropeace
+cd C:\CMP468\project2-zamanlafiya
 ```
 
 ### Step 3. Create a virtual environment and install packages
@@ -39,9 +39,9 @@ python manage.py genkey
 ```
 It prints three lines for Windows and three for Linux. **Copy the lines for your system, paste them into
 the terminal and press Enter.** Save them in a text file too, because:
-- `AGROPEACE_DATA_KEY` encrypts reporter phone numbers. Lose it and they cannot be decrypted.
-- `AGROPEACE_DEVICE_SECRET` signs GPS pings from herd devices.
-- `AGROPEACE_SECRET_KEY` protects login sessions.
+- `ZAMANLAFIYA_DATA_KEY` encrypts reporter phone numbers. Lose it and they cannot be decrypted.
+- `ZAMANLAFIYA_DEVICE_SECRET` signs GPS pings from herd devices.
+- `ZAMANLAFIYA_SECRET_KEY` protects login sessions.
 
 Every new terminal needs these three variables set again (paste the same lines).
 
@@ -130,7 +130,7 @@ Herds start moving on the map, SMS and USSD reports arrive, alerts appear on the
    Load the CSV into the `ndvi` table (`lga, year, month, value, clim`).
 5. **SMS and USSD.** Open an account with Africa's Talking or Termii. Point the inbound SMS callback to
    `https://YOUR-SERVER/api/sms` and the USSD callback to `https://YOUR-SERVER/api/ussd`. For outgoing alerts,
-   set `alerts.sms_gateway.enabled` to `true` in `config.json` and set `AGROPEACE_SMS_KEY`.
+   set `alerts.sms_gateway.enabled` to `true` in `config.json` and set `ZAMANLAFIYA_SMS_KEY`.
 6. **Herd devices.** A herder app or GPS collar sends:
    ```
    POST /api/herd_ping
@@ -140,7 +140,7 @@ Herds start moving on the map, SMS and USSD reports arrive, alerts appear on the
    ```
    Tracking must be voluntary, agreed with herders' associations.
 7. **Server.** Run behind Nginx with HTTPS (Let's Encrypt), as a systemd service, with keys in an
-   environment file readable only by the service account. Back up the database daily (UniGuard from
+   environment file readable only by the service account. Back up the database daily (VarsityShield from
    project 1 can do this).
 8. **Policy.** Write a data protection policy under the NDPA 2023: who may reveal informants, retention of
    raw reports (for example 12 months), and annual review of user accounts.
@@ -151,7 +151,7 @@ Herds start moving on the map, SMS and USSD reports arrive, alerts appear on the
 
 SMS (works while `app.py` runs):
 ```
-curl -X POST -d "from=08031234567&text=AP Guma CROP cows in yam farm at Yelwata" http://127.0.0.1:5050/api/sms
+curl -X POST -d "from=08031234567&text=ZL Guma CROP cows in yam farm at Yelwata" http://127.0.0.1:5050/api/sms
 ```
 USSD, three steps of one session:
 ```
@@ -183,9 +183,9 @@ SMS keywords: `CROP` crop destruction, `RUSTLE` cattle theft, `COW` cattle kille
 
 ## Troubleshooting
 
-- **"Set AGROPEACE_DATA_KEY"**: new terminal. Paste the key lines again (the same ones, not new ones).
+- **"Set ZAMANLAFIYA_DATA_KEY"**: new terminal. Paste the key lines again (the same ones, not new ones).
 - **Reporter numbers show `<undecryptable>`**: you generated new keys after `init`. Use the original keys or
-  delete `data/agropeace.db` and run Steps 5 to 6 again.
+  delete `data/zamanlafiya.db` and run Steps 5 to 6 again.
 - **Blank map background**: no internet for map tiles. Everything else still works.
-- **Simulator gets HTTP 401**: the simulator terminal has a different `AGROPEACE_DEVICE_SECRET` from the server.
+- **Simulator gets HTTP 401**: the simulator terminal has a different `ZAMANLAFIYA_DEVICE_SECRET` from the server.
 - **"Too many reports from this number"**: the per-number hourly limit (5) worked. Wait or use another number.

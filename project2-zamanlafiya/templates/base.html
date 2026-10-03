@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AgroPeace Early Warning</title>
+<title>Zaman Lafiya Early Warning</title>
 <style>
 :root{--bg:#f4f7f2;--card:#fff;--text:#1f2a1f;--muted:#5f6f5f;--brand:#1b5e20;--line:#dfe6db}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
@@ -15,7 +15,7 @@ button.alt{background:#b71c1c}input,select,textarea{padding:7px;border:1px solid
 .lvl{padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:#000}
 .Low{background:#66bb6a}.Moderate{background:#fdd835}.High{background:#fb8c00}.Severe{background:#e53935;color:#fff}
 </style>{% block head %}{% endblock %}</head>
-<body><header><div><b>AgroPeace</b> &middot; GIS Early Warning &amp; Response for Farmer-Herder Conflict</div>
+<body><header><div><b>Zaman Lafiya</b> &middot; GIS Early Warning &amp; Response for Farmer-Herder Conflict</div>
 <nav>{% if user %}<a href="/">Live map</a>{% if rank>=2 %}<a href="/incidents">Incidents</a>{% endif %}{% if rank>=1 %}<a href="/cases">Mediation cases</a>{% endif %}
 {% if rank>=3 %}<a href="/audit">Audit</a>{% endif %}<a href="/report">Public report form</a><a href="/logout">Logout ({{ user }}, {{ role }})</a>
 {% else %}<a href="/report">Report an incident</a><a href="/login">Staff login</a>{% endif %}</nav></header>

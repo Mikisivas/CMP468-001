@@ -1,12 +1,12 @@
-"""Builds Report 2: AgroPeace (GIS-based early warning for farmer-herder conflict)."""
+"""Builds Report 2: Zaman Lafiya (GIS-based early warning for farmer-herder conflict)."""
 import os
 
 from docx_helpers import Report
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Report2_AgroPeace_GIS_Early_Warning.docx")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Report2_ZamanLafiya_GIS_Early_Warning.docx")
 
 r = Report()
-r.title_page("AgroPeace: A GIS-Based Early Warning and Real-Time Response Framework for Farmer-Herder "
+r.title_page("Zaman Lafiya: A GIS-Based Early Warning and Real-Time Response Framework for Farmer-Herder "
              "Conflict Resolution in Nigeria",
              "A secure, data-driven system for prevention, alerting and mediation")
 
@@ -22,7 +22,7 @@ r.p("Violent conflict between crop farmers and pastoralists kills people, displa
     "insecurity across Nigeria's Middle Belt. Survey evidence from 401 rural households shows that both the "
     "incidence and the severity of these conflicts significantly increase household food insecurity "
     "(Nnaji et al., 2022). Existing early warning practice in pastoral areas is weakly structured, with poor "
-    "coordination and slow response (Alemneh, 2025). This project designed and built AgroPeace, a GIS-based "
+    "coordination and slow response (Alemneh, 2025). This project designed and built Zaman Lafiya, a GIS-based "
     "early warning and real-time response framework. It combines (1) a geodatabase of Local Government Areas "
     "(LGAs), farmland, grazing reserves, water points and stock routes, (2) incident intake through a web form, "
     "SMS and USSD for basic phones, (3) signed GPS pings from herds with geofencing for farmland encroachment "
@@ -35,7 +35,7 @@ r.p("Violent conflict between crop farmers and pastoralists kills people, displa
     "audit trail. On a synthetic two-year panel of 2,376 LGA-weeks, the random forest reached an AUC of 0.659 "
     "for predicting incidents in the next seven days, against 0.611 for a naive last-month baseline. In a live "
     "simulation, the system detected three farmland encroachments and five stock route deviations in real time, "
-    "and raised Guma LGA from High (54.9) to Severe (82.9) within one scoring cycle after field reports arrived.")
+    "and raised Guma LGA from High (54.9) to Severe (81.7) within one scoring cycle after field reports arrived.")
 r.p("**Keywords:** early warning system, GIS, farmer-herder conflict, geofencing, NDVI, machine learning, "
     "data protection, Nigeria.")
 r.page_break()
@@ -113,8 +113,8 @@ r.p("The framework gives state emergency centres and LGA peace committees a shar
     "data without exposing the people who report it, in line with the Nigeria Data Protection Act 2023.")
 
 r.h2("1.6 Relation to the CMP 468 Course Outline")
-r.table("Mapping of course topics to AgroPeace",
-        ["CMP 468 topic", "Where it appears in AgroPeace"],
+r.table("Mapping of course topics to Zaman Lafiya",
+        ["CMP 468 topic", "Where it appears in Zaman Lafiya"],
         [["Overview of security in computing", "Threat model covering informants, communities, devices and "
           "the server"],
          ["Characteristics of computer intrusion", "Forged GPS pings, flooding with fake reports, bots on the "
@@ -148,7 +148,7 @@ r.p("Three theories guide the design. Resource scarcity and political ecology ex
     "pasture competition produce conflict (Abdullahi, 2025; Lamidi, 2025). Relative deprivation and perceived "
     "injustice explain why some disputes escalate and others do not (Nwankwo, 2025). Conflict prevention "
     "theory, used by Kamau et al. (2022) in Samburu County, Kenya, holds that early warning only works when it "
-    "is linked to a response. AgroPeace therefore measures scarcity (NDVI), tracks grievances (crop damage, "
+    "is linked to a response. Zaman Lafiya therefore measures scarcity (NDVI), tracks grievances (crop damage, "
     "rustling, threats) and ties every warning to a named responder and a case record.")
 
 r.h2("2.2 Causes and Effects of Farmer-Herder Conflict in Nigeria")
@@ -177,7 +177,7 @@ r.p("McGuirk and Nunn (2024) combined ethnographic maps with rainfall and confli
     "Schwarz et al. (2022) used Earth observation data with the Transhumance Tracking Tool to map environmental "
     "suitability for transhumance in Chad and the Central African Republic, located conflict risk areas along an "
     "agricultural belt, and proposed combining real-time herd tracking with satellite data into an early "
-    "warning system. AgroPeace implements that proposal for Nigeria.")
+    "warning system. Zaman Lafiya implements that proposal for Nigeria.")
 
 r.h2("2.4 Conflict Early Warning Systems")
 r.p("Rød et al. (2023) compared existing conflict early warning systems and found poor transparency of data "
@@ -188,7 +188,7 @@ r.p("Rød et al. (2023) compared existing conflict early warning systems and fou
     "bulletins, rangeland monitoring apps and threat alerts with traditional knowledge, but lacks resources. "
     "Derbyshire et al. (2024) argue that drought early warning in Kenya should build on pastoralists' own "
     "networked knowledge rather than only external data. Rochana et al. (2024) showed that a village WhatsApp "
-    "group can serve as a low-cost social conflict warning system. These works shaped three AgroPeace choices: "
+    "group can serve as a low-cost social conflict warning system. These works shaped three Zaman Lafiya choices: "
     "transparent scoring with visible drivers, local channels (SMS, USSD, local languages), and a built-in "
     "response workflow.")
 
@@ -199,9 +199,9 @@ r.p("Goodman et al. (2024) trained convolutional networks on Landsat imagery and
     "countries. Browning et al. (2024) fitted a Bayesian spatiotemporal Hawkes process to ACLED data and showed "
     "it is more stable than the historical averages used in many humanitarian dashboards. The self-exciting idea "
     "behind Hawkes models, where one attack raises the chance of reprisals, informs the recency-weighted incident "
-    "feature in AgroPeace. In Nigeria, Olaide et al. (2021) trained neural networks on ACLED data, and Olayinka "
+    "feature in Zaman Lafiya. In Nigeria, Olaide et al. (2021) trained neural networks on ACLED data, and Olayinka "
     "et al. (2024) reached 96.8% accuracy classifying terrorism incidents with REPTree. High accuracy on "
-    "imbalanced event data can hide poor recall, so AgroPeace reports AUC, precision, recall and a naive "
+    "imbalanced event data can hide poor recall, so Zaman Lafiya reports AUC, precision, recall and a naive "
     "baseline instead of accuracy alone.")
 
 r.h2("2.6 Mobile Reporting, IoT and Geospatial Tracking")
@@ -219,7 +219,7 @@ r.p("WHO's EWARS Mobile tool delivered timely alerts from 158 health facilities 
 
 r.h2("2.7 Summary of Related Works and Research Gap")
 r.table("Summary of closely related works (2021 to 2026)",
-        ["Author (Year)", "Approach", "Strength", "Gap addressed by AgroPeace"],
+        ["Author (Year)", "Approach", "Strength", "Gap addressed by Zaman Lafiya"],
         [["Schwarz et al. (2022)", "EO suitability maps for transhumance", "Locates risk corridors",
           "Not real-time, no alerts"],
          ["Kamau et al. (2022)", "County early warning practice, Kenya", "Links state and community actors",
@@ -239,7 +239,7 @@ r.table("Summary of closely related works (2021 to 2026)",
         widths=[3.3, 4.3, 3.6, 4.8])
 r.p("**Gap.** No reviewed system for Nigeria combines a geodatabase of farms, routes and reserves, "
     "multi-channel field reporting for basic phones, live herd geofencing, an explainable hybrid risk model, "
-    "multilingual alerts, mediation case tracking and strong protection of informants. AgroPeace addresses "
+    "multilingual alerts, mediation case tracking and strong protection of informants. Zaman Lafiya addresses "
     "that combination.")
 r.page_break()
 
@@ -382,13 +382,13 @@ r.p("The system was written in Python and tested on Linux with Python 3.11. It a
     "route, 97 contacts, and synthetic NDVI for three years. A synthetic two-year incident history (1,056 "
     "events) was generated with seasonal effects, drought effects and self-excitation, so that the model has "
     "realistic, learnable patterns.")
-r.figure("agropeace_map.png", "Live map: LGA risk circles, farmland blocks, the dashed stock route, herd "
+r.figure("zamanlafiya_map.png", "Live map: LGA risk circles, farmland blocks, the dashed stock route, herd "
          "positions and trails, and live reports, with the ranked risk table (map tiles were blocked in the "
          "test environment, so the base map is blank)")
-r.figure("agropeace_side.png", "Explained risk for Guma LGA with its drivers and trend, followed by "
+r.figure("zamanlafiya_side.png", "Explained risk for Guma LGA with its drivers and trend, followed by "
          "multilingual alerts sent to named stakeholders", width_cm=8)
-r.figure("agropeace_report.png", "Public reporting form with anonymous option and location capture")
-r.figure("agropeace_incidents.png", "Analyst view: verify or reject reports. Reporter identity is shown only "
+r.figure("zamanlafiya_report.png", "Public reporting form with anonymous option and location capture")
+r.figure("zamanlafiya_incidents.png", "Analyst view: verify or reject reports. Reporter identity is shown only "
          "as 'protected (encrypted)'")
 
 r.h2("4.2 Model Evaluation")
@@ -421,7 +421,7 @@ r.table("Real-time events observed", ["Event", "Result"],
          ["SMS reports accepted", "6 of 6 in the first run. In a later run the sixth was blocked by the "
           "per-number hourly limit, as designed"],
          ["USSD report", "Accepted through a 3-step menu ('END Report #... received')"],
-         ["Guma LGA risk", "Rose from High 54.9 to Severe 82.9 at the next scoring cycle (under 30 s)"],
+         ["Guma LGA risk", "Rose from High 54.9 to Severe 81.7 at the next scoring cycle (under 30 s)"],
          ["Mediation cases", "Opened automatically for cattle rustling and the armed attack report"],
          ["Recipients per LGA alert", "4 LGA contacts plus the State Emergency Operations Centre, in "
           "English, Hausa or Pidgin"]],
@@ -457,7 +457,7 @@ r.page_break()
 # ------------------------------------------------------------ chapter 5
 r.h1("CHAPTER FIVE: SUMMARY, CONCLUSION AND RECOMMENDATIONS")
 r.h2("5.1 Summary")
-r.p("AgroPeace is a GIS-based early warning and response framework for farmer-herder conflict. It maps farms, "
+r.p("Zaman Lafiya is a GIS-based early warning and response framework for farmer-herder conflict. It maps farms, "
     "routes and reserves, gathers reports from any phone, tracks herds with signed GPS pings, scores risk per "
     "LGA with an explainable hybrid model, alerts local stakeholders in their languages, and tracks mediation "
     "cases. It protects informants with encryption and pseudonyms and records all sensitive actions in a "
@@ -549,7 +549,7 @@ r.references([
 r.page_break()
 
 r.h1("APPENDIX A: SOURCE CODE STRUCTURE")
-r.table("AgroPeace source files", ["File", "Purpose"],
+r.table("Zaman Lafiya source files", ["File", "Purpose"],
         [["core.py", "Database, encryption, pseudonyms, geometry, features, risk engine, alerts, geofence"],
          ["geodata.py", "LGAs, generated farmland, grazing reserves, water points and stock route"],
          ["manage.py", "Key generation, initialisation, synthetic history, ACLED import, training, risk ranking"],
@@ -558,7 +558,7 @@ r.table("AgroPeace source files", ["File", "Purpose"],
          ["templates/", "Map dashboard, report form, incidents, cases, audit pages"]],
         widths=[3.5, 12.5])
 r.p("The full source code and the step-by-step implementation guide are in the project folder "
-    "project2-agropeace (README.md).")
+    "project2-zamanlafiya (README.md).")
 
 r.save(OUT)
 print("wrote", OUT)

@@ -1,8 +1,8 @@
 {
   "institution": "Demo Federal University (CMP 468 Project)",
   "host_name": "ict-server-01",
-  "database": "data/uniguard.db",
-  "log_file": "data/uniguard.log",
+  "database": "data/varsityshield.db",
+  "log_file": "data/varsityshield.log",
   "monitor": {
     "interval_seconds": 15,
     "disk_paths": ["/"],
@@ -34,7 +34,7 @@
   "backup": {
     "sources": ["sample_data"],
     "repository": "data/repository",
-    "passphrase_env": "UNIGUARD_PASSPHRASE",
+    "passphrase_env": "VSHIELD_PASSPHRASE",
     "interval_minutes": 30,
     "rpo_minutes": 60,
     "exclude_extensions": [".tmp", ".lock", ".locked"],
@@ -59,22 +59,22 @@
         "smtp_host": "smtp.gmail.com",
         "smtp_port": 587,
         "username": "ict-alerts@example.edu.ng",
-        "password_env": "UNIGUARD_SMTP_PASSWORD",
+        "password_env": "VSHIELD_SMTP_PASSWORD",
         "from": "ict-alerts@example.edu.ng",
         "to": ["sysadmin@example.edu.ng"],
         "severities": ["critical", "warning"]
       },
       "telegram": {
         "enabled": false,
-        "token_env": "UNIGUARD_TELEGRAM_TOKEN",
+        "token_env": "VSHIELD_TELEGRAM_TOKEN",
         "chat_id": "123456789",
         "severities": ["critical", "warning"]
       },
       "sms": {
         "enabled": false,
         "url": "https://api.ng.termii.com/api/sms/send",
-        "api_key_env": "UNIGUARD_SMS_KEY",
-        "sender_id": "UniGuard",
+        "api_key_env": "VSHIELD_SMS_KEY",
+        "sender_id": "VShield",
         "to": "2348000000000",
         "severities": ["critical"]
       }
@@ -83,7 +83,7 @@
   "dashboard": {
     "host": "127.0.0.1",
     "port": 5000,
-    "secret_key_env": "UNIGUARD_SECRET_KEY"
+    "secret_key_env": "VSHIELD_SECRET_KEY"
   },
   "users": {}
 }

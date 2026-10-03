@@ -1,6 +1,6 @@
-# UniGuard: Automated Monitoring, Backup and Recovery for University Digital Infrastructure
+# VarsityShield: Automated Monitoring, Backup and Recovery for University Digital Infrastructure
 
-CMP 468 (Computer Security) project 1. UniGuard watches your servers and services, takes encrypted
+CMP 468 (Computer Security) project 1. VarsityShield watches your servers and services, takes encrypted
 3-2-1 backups, blocks ransomware-encrypted files from entering the backup history, and restores data
 with a measured RTO.
 
@@ -24,10 +24,10 @@ You need about 20 minutes. Commands are given for Windows (PowerShell) and Linux
 
 ### Step 2. Get the project folder
 
-Copy the `project1-uniguard` folder to your laptop, for example `C:\CMP468\project1-uniguard`, then open
+Copy the `project1-varsityshield` folder to your laptop, for example `C:\CMP468\project1-varsityshield`, then open
 a terminal inside it:
 ```
-cd C:\CMP468\project1-uniguard
+cd C:\CMP468\project1-varsityshield
 ```
 
 ### Step 3. Create a virtual environment and install packages
@@ -53,24 +53,24 @@ be decrypted, so write it down.
 
 Windows:
 ```
-$env:UNIGUARD_PASSPHRASE="Choose-A-Long-Passphrase-2026"
-$env:UNIGUARD_SECRET_KEY="any-long-random-text-for-web-sessions"
+$env:VSHIELD_PASSPHRASE="Choose-A-Long-Passphrase-2026"
+$env:VSHIELD_SECRET_KEY="any-long-random-text-for-web-sessions"
 ```
 Linux/macOS:
 ```
-export UNIGUARD_PASSPHRASE='Choose-A-Long-Passphrase-2026'
-export UNIGUARD_SECRET_KEY='any-long-random-text-for-web-sessions'
+export VSHIELD_PASSPHRASE='Choose-A-Long-Passphrase-2026'
+export VSHIELD_SECRET_KEY='any-long-random-text-for-web-sessions'
 ```
 You must set these again every time you open a new terminal.
 
-### Step 5. Initialise UniGuard
+### Step 5. Initialise VarsityShield
 
 ```
 python cli.py init
 ```
 This creates the encrypted repository in `data/repository`, deploys two canary (decoy) files, and creates
 two users: `admin` (full rights) and `auditor` (read-only). To pick your own password, set
-`UNIGUARD_ADMIN_PASSWORD` before running `init`.
+`VSHIELD_ADMIN_PASSWORD` before running `init`.
 
 ### Step 6. Create demo university data
 
@@ -79,7 +79,7 @@ python simulate.py seed
 ```
 This writes student records, school fees, results, lecture notes and payroll into `sample_data/`.
 
-### Step 7. Start the demo student portal (the service UniGuard will monitor)
+### Step 7. Start the demo student portal (the service VarsityShield will monitor)
 
 ```
 python simulate.py portal --background
@@ -112,7 +112,7 @@ Run these in the second terminal while the dashboard is on the projector.
 | # | Say this | Run this | What the panel sees |
 |---|----------|----------|---------------------|
 | 1 | "This is our university's live status." | (show dashboard) | CPU, memory, disk, services UP, canaries Intact |
-| 2 | "The student portal crashes." | `python simulate.py outage` | Within 15 s: critical alert, then UniGuard restarts it and it shows UP |
+| 2 | "The student portal crashes." | `python simulate.py outage` | Within 15 s: critical alert, then VarsityShield restarts it and it shows UP |
 | 3 | "Ransomware encrypts results quietly, without renaming files." | `python simulate.py tamper` then click **Run backup now** | Backup status `frozen`, entropy alert. Encrypted files never enter the history |
 | 4 | "Now a full ransomware attack." | `python simulate.py attack` | Canaries TRIPPED, critical alert. Open `sample_data` to show `.locked` files and the ransom note |
 | 5 | "We recover." | Backups & Restore page, click **Restore** on the newest snapshot | Files back, measured RTO shown on dashboard |
@@ -151,28 +151,28 @@ remove the `"admin"` and `"auditor"` entries from `"users"` in `config.json`, an
 5. **Add real services** in `monitor.services` (portal URL, LMS URL, database port, mail server port) and a
    `restart_command` for each, for example `systemctl restart apache2`.
 6. **Enable alerts** in `alerts.channels`:
-   - Email: fill SMTP details and set `UNIGUARD_SMTP_PASSWORD`.
-   - Telegram: create a bot with @BotFather, put the chat id in config, set `UNIGUARD_TELEGRAM_TOKEN`.
-   - SMS: use a Nigerian gateway (Termii or Africa's Talking) and set `UNIGUARD_SMS_KEY`.
+   - Email: fill SMTP details and set `VSHIELD_SMTP_PASSWORD`.
+   - Telegram: create a bot with @BotFather, put the chat id in config, set `VSHIELD_TELEGRAM_TOKEN`.
+   - SMS: use a Nigerian gateway (Termii or Africa's Talking) and set `VSHIELD_SMS_KEY`.
    Then set `"enabled": true`.
 7. **Run as a service.**
-   - Linux (systemd), file `/etc/systemd/system/uniguard.service`:
+   - Linux (systemd), file `/etc/systemd/system/varsityshield.service`:
      ```
      [Unit]
-     Description=UniGuard
+     Description=VarsityShield
      After=network.target
      [Service]
-     WorkingDirectory=/opt/uniguard
-     EnvironmentFile=/etc/uniguard.env
-     ExecStart=/opt/uniguard/venv/bin/python app.py
+     WorkingDirectory=/opt/varsityshield
+     EnvironmentFile=/etc/varsityshield.env
+     ExecStart=/opt/varsityshield/venv/bin/python app.py
      Restart=always
      [Install]
      WantedBy=multi-user.target
      ```
-     Put the passphrase in `/etc/uniguard.env` with `chmod 600`. Then `systemctl enable --now uniguard`.
-   - Without the dashboard, use cron: `*/30 * * * * cd /opt/uniguard && venv/bin/python cli.py backup`
+     Put the passphrase in `/etc/varsityshield.env` with `chmod 600`. Then `systemctl enable --now varsityshield`.
+   - Without the dashboard, use cron: `*/30 * * * * cd /opt/varsityshield && venv/bin/python cli.py backup`
    - Windows: Task Scheduler → Create Task → Trigger every 30 minutes → Action
-     `C:\CMP468\project1-uniguard\venv\Scripts\python.exe cli.py backup`, "Start in" the project folder.
+     `C:\CMP468\project1-varsityshield\venv\Scripts\python.exe cli.py backup`, "Start in" the project folder.
 8. **Protect the dashboard.** Keep `host` as `127.0.0.1` and reach it through SSH or put it behind Nginx
    with HTTPS on the staff VLAN only.
 9. **Drill every quarter** with `python cli.py restore --snapshot latest --target D:\restore_test` and record
@@ -197,7 +197,7 @@ remove the `"admin"` and `"auditor"` entries from `"users"` in `config.json`, an
 
 ## Troubleshooting
 
-- **"Set the UNIGUARD_PASSPHRASE environment variable"**: you opened a new terminal. Repeat Step 4.
+- **"Set the VSHIELD_PASSPHRASE environment variable"**: you opened a new terminal. Repeat Step 4.
 - **"Wrong backup passphrase"**: the passphrase differs from the one used at `init`.
 - **Port 5000 in use**: change `dashboard.port` in `config.json`.
 - **Portal shows DOWN on Windows after outage**: wait one monitoring cycle (15 s). The restart command

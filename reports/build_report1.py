@@ -1,12 +1,12 @@
-"""Builds Report 1: UniGuard (automated monitoring, backup and recovery)."""
+"""Builds Report 1: VarsityShield (automated monitoring, backup and recovery)."""
 import os
 
 from docx_helpers import Report
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Report1_UniGuard_Monitoring_Backup_Recovery.docx")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Report1_VarsityShield_Monitoring_Backup_Recovery.docx")
 
 r = Report()
-r.title_page("UniGuard: An Automated Monitoring, Backup and Recovery System for University Digital Infrastructure",
+r.title_page("VarsityShield: An Automated Monitoring, Backup and Recovery System for University Digital Infrastructure",
              "A ransomware-resilient design for Nigerian universities")
 
 # ------------------------------------------------------------ front matter
@@ -23,7 +23,7 @@ r.p("Nigerian universities now run admissions, course registration, school fees,
     "alone. Studies of Nigerian higher education institutions report weak incident response, few monitoring "
     "platforms, poor funding, unstable electricity and a shortage of skilled staff (Olugbile et al., 2025; "
     "Yunisa, 2025; Aba, 2026). When a server fails or ransomware strikes, a university without tested backups "
-    "may lose a whole session of results. This project designed, built and tested UniGuard, a low-cost system "
+    "may lose a whole session of results. This project designed, built and tested VarsityShield, a low-cost system "
     "that combines four functions: (1) continuous monitoring of servers and services with threshold and "
     "statistical anomaly alerts, (2) encrypted, de-duplicated, incremental backups with a 3-2-1 replica "
     "layout, (3) ransomware early detection with canary files and entropy-based integrity gating, and "
@@ -33,7 +33,7 @@ r.p("Nigerian universities now run admissions, course registration, school fees,
     "(a 77.3% reduction). Unchanged incremental runs took 0.09 s. A simulated ransomware attack was detected "
     "by canary files, the backup history was frozen before encrypted files could enter it, and all 19 files "
     "were restored byte-for-byte in 0.15 s. A tampered backup object was detected and repaired from a replica. "
-    "UniGuard runs on one ordinary server with Python, so a Nigerian university ICT unit can adopt it without "
+    "VarsityShield runs on one ordinary server with Python, so a Nigerian university ICT unit can adopt it without "
     "licence fees.")
 r.p("**Keywords:** backup and recovery, ransomware, monitoring, AES-256-GCM, integrity, RPO, RTO, "
     "Nigerian universities, NDPA 2023.")
@@ -96,7 +96,7 @@ r.bullets([
 ], numbered=True)
 
 r.h2("1.4 Scope and Limitations")
-r.p("UniGuard protects file-level data and monitors one or more servers from a central node. It was tested "
+r.p("VarsityShield protects file-level data and monitors one or more servers from a central node. It was tested "
     "with synthetic but realistic university records (student register, fees, results, lecture notes and "
     "payroll). It does not replace endpoint antivirus or a network firewall. Database engines such as MySQL "
     "or PostgreSQL are protected by backing up their dump files, which a pre-backup hook can create. The test "
@@ -111,8 +111,8 @@ r.p("The work gives a Nigerian ICT unit a free, auditable tool it can run on exi
     "when it reports to the university council or to the Nigeria Data Protection Commission.")
 
 r.h2("1.6 Relation to the CMP 468 Course Outline")
-r.table("Mapping of course topics to UniGuard features",
-        ["CMP 468 topic", "Where it appears in UniGuard"],
+r.table("Mapping of course topics to VarsityShield features",
+        ["CMP 468 topic", "Where it appears in VarsityShield"],
         [["Overview of security in computing", "CIA triad drives the design: AES-GCM (confidentiality), "
           "SHA-256/HMAC chain (integrity), 3-2-1 replicas and restore drills (availability)"],
          ["Characteristics of computer intrusion", "Ransomware behaviour model: mass modification, renamed "
@@ -190,7 +190,7 @@ r.p("Open-source monitoring stacks dominate recent work. Pragathi et al. (2024) 
     "fewer false positives. Rafiq et al. (2025) used regression, K-means and LSTM models at the edge and reported "
     "a 95% reduction in downtime across 500 nodes, and Kasinadhuni (2026) combined four anomaly detectors with "
     "log correlation to cut time to first insight from about 90 minutes to under 5.")
-r.p("UniGuard adopts the lighter ideas from this body of work: sliding-window z-score anomaly detection "
+r.p("VarsityShield adopts the lighter ideas from this body of work: sliding-window z-score anomaly detection "
     "(Zhang et al., 2026), alert de-duplication, and self-healing restarts (Simili et al., 2021). It avoids "
     "running a full Prometheus and Kubernetes stack, which would be heavy for a single university server, but "
     "its SQLite metric store could be exported to Prometheus later.")
@@ -245,7 +245,7 @@ r.table("Summary of closely related works (2021 to 2026)",
         widths=[3.2, 4.3, 3.8, 4.7])
 r.p("**Gap.** No reviewed study combines monitoring, encrypted 3-2-1 backup, ransomware gating, automated "
     "verification, measured recovery and a tamper-evident audit trail in one low-cost tool designed for the "
-    "power, bandwidth and budget conditions of Nigerian universities. UniGuard fills that gap.")
+    "power, bandwidth and budget conditions of Nigerian universities. VarsityShield fills that gap.")
 r.page_break()
 
 # ------------------------------------------------------------ chapter 3
@@ -283,7 +283,7 @@ r.table("Functional and non-functional requirements",
         widths=[1.2, 12, 2.8])
 
 r.h2("3.4 System Architecture")
-r.p("UniGuard has five modules that share a SQLite database. The diagram after this list shows how "
+r.p("VarsityShield has five modules that share a SQLite database. The diagram after this list shows how "
     "data moves between them:")
 r.bullets([
     "**Monitor** (monitor.py) gathers host metrics with psutil, probes services, applies static thresholds and "
@@ -335,7 +335,7 @@ r.p("Objects are written to a temporary file, flushed, atomically renamed and se
     "at least one copy is offline (Lysetskyi et al., 2025).")
 r.h3("3.5.5 Ransomware early detection")
 r.p("Two decoy files are placed in the protected folder. Ransomware encrypts files in bulk, so it usually hits "
-    "the canaries. When their hashes change, UniGuard raises a critical alert and freezes backups. "
+    "the canaries. When their hashes change, VarsityShield raises a critical alert and freezes backups. "
     "Independently, every changed file is inspected: text formats (CSV, TXT, SQL, JSON) with Shannon entropy "
     "above 7.2 bits per byte, or Office, PDF and image files whose signature bytes are missing, are treated "
     "as encrypted. If three or more such files appear, the snapshot is not written, following the "
@@ -386,9 +386,9 @@ r.p("The system was developed and tested on Linux with Python 3.11. It also runs
     "courses, twelve lecture note files, and a payroll file for 120 staff (19 files, 9,431,828 bytes).")
 
 r.h2("4.2 User Interface")
-r.figure("uniguard_dashboard.png", "UniGuard dashboard showing live metrics, service status, the ransomware "
+r.figure("varsityshield_dashboard.png", "VarsityShield dashboard showing live metrics, service status, the ransomware "
          "alerts raised during the drill, frozen backups, an anomaly alert and a measured restore time")
-r.figure("uniguard_snapshots.png", "Snapshot list with per-snapshot restore (whole snapshot, sub-folder, or "
+r.figure("varsityshield_snapshots.png", "Snapshot list with per-snapshot restore (whole snapshot, sub-folder, or "
          "into a separate folder for inspection)")
 
 r.h2("4.3 Test Plan and Results")
@@ -442,11 +442,11 @@ r.p("The results meet the objectives. The most important finding is test 4. A st
     "files without renaming them would, in a naive incremental backup, overwrite the clean history within one "
     "cycle. Integrity gating blocked this, confirming the approach of Amoruso et al. (2026) in a server "
     "setting. Test 8 shows why replicas matter: verification alone only tells the administrator that a backup "
-    "is damaged, while the replica allowed automatic repair. Compared with Simili et al. (2021), UniGuard adds "
+    "is damaged, while the replica allowed automatic repair. Compared with Simili et al. (2021), VarsityShield adds "
     "data protection to monitoring and self-healing. Compared with Kodali et al. (2026), it adds replicas, "
     "hash-chained snapshots, role-based access, an audit log and service monitoring.")
 r.p("Limitations remain. Entropy checks cannot judge files that are already compressed, such as ZIP or MP4, so "
-    "for those UniGuard depends on signature checks and canaries. An attacker with administrator rights on the "
+    "for those VarsityShield depends on signature checks and canaries. An attacker with administrator rights on the "
     "backup server could delete the local repository, which is why one replica must be offline or "
     "object-locked. The current version backs up files, so databases must be dumped first.")
 r.page_break()
@@ -454,7 +454,7 @@ r.page_break()
 # ------------------------------------------------------------ chapter 5
 r.h1("CHAPTER FIVE: SUMMARY, CONCLUSION AND RECOMMENDATIONS")
 r.h2("5.1 Summary")
-r.p("This project built UniGuard, an automated monitoring, backup and recovery system for university digital "
+r.p("This project built VarsityShield, an automated monitoring, backup and recovery system for university digital "
     "infrastructure. It monitors hosts and services, detects anomalies, restarts failed services, takes "
     "encrypted and de-duplicated backups with three copies, blocks ransomware-encrypted data from the backup "
     "history, verifies and repairs backups, and restores data with measured RTO and RPO. All administrative "
@@ -462,7 +462,7 @@ r.p("This project built UniGuard, an automated monitoring, backup and recovery s
 r.h2("5.2 Conclusion")
 r.p("A reliable recovery capability does not require expensive commercial suites. Standard cryptography, "
     "careful design and regular drills can give a Nigerian university a backup system that survives "
-    "ransomware. In testing, UniGuard detected a simulated attack, refused to save encrypted data, and restored "
+    "ransomware. In testing, VarsityShield detected a simulated attack, refused to save encrypted data, and restored "
     "every file byte-for-byte. This addresses the post-event weakness that Olugbile et al. (2025) found in most "
     "Nigerian universities.")
 r.h2("5.3 Recommendations")
@@ -541,7 +541,7 @@ r.references([
 r.page_break()
 
 r.h1("APPENDIX A: SOURCE CODE STRUCTURE")
-r.table("UniGuard source files", ["File", "Purpose"],
+r.table("VarsityShield source files", ["File", "Purpose"],
         [["common.py", "Configuration, SQLite access, alert channels, password hashing, audit chain"],
          ["backup_engine.py", "Key derivation, encryption, snapshots, replication, verify, repair, restore, prune"],
          ["ransomware_guard.py", "Canary files, entropy and signature inspection"],
@@ -552,7 +552,7 @@ r.table("UniGuard source files", ["File", "Purpose"],
          ["config.json", "Policy settings: thresholds, RPO, retention, replicas, alert channels"]],
         widths=[4, 12])
 r.p("The full source code and the step-by-step implementation guide are in the project folder "
-    "project1-uniguard (README.md).")
+    "project1-varsityshield (README.md).")
 
 r.save(OUT)
 print("wrote", OUT)

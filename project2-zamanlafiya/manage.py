@@ -1,4 +1,4 @@
-"""AgroPeace management commands. Run `python manage.py --help`."""
+"""Zaman Lafiya management commands. Run `python manage.py --help`."""
 import argparse
 import csv
 import hashlib
@@ -21,11 +21,11 @@ def cmd_genkey(a):
     k = Fernet.generate_key().decode()
     d = secrets.token_hex(24)
     s = secrets.token_hex(32)
-    print("Keep these secret. Set them in your terminal before running AgroPeace.\n")
+    print("Keep these secret. Set them in your terminal before running Zaman Lafiya.\n")
     print("Windows (PowerShell):")
-    print(f'  $env:AGROPEACE_DATA_KEY="{k}"\n  $env:AGROPEACE_DEVICE_SECRET="{d}"\n  $env:AGROPEACE_SECRET_KEY="{s}"\n')
+    print(f'  $env:ZAMANLAFIYA_DATA_KEY="{k}"\n  $env:ZAMANLAFIYA_DEVICE_SECRET="{d}"\n  $env:ZAMANLAFIYA_SECRET_KEY="{s}"\n')
     print("Linux / macOS:")
-    print(f"  export AGROPEACE_DATA_KEY='{k}'\n  export AGROPEACE_DEVICE_SECRET='{d}'\n  export AGROPEACE_SECRET_KEY='{s}'")
+    print(f"  export ZAMANLAFIYA_DATA_KEY='{k}'\n  export ZAMANLAFIYA_DEVICE_SECRET='{d}'\n  export ZAMANLAFIYA_SECRET_KEY='{s}'")
 
 
 def cmd_init(a):
@@ -37,7 +37,7 @@ def cmd_init(a):
                [(k, n, l, json.dumps(g)) for k, n, l, g in geodata.build_zones()])
     seed_ndvi(cfg)
     seed_contacts(cfg)
-    pw = os.environ.get("AGROPEACE_ADMIN_PASSWORD", "ChangeMe@468")
+    pw = os.environ.get("ZAMANLAFIYA_ADMIN_PASSWORD", "ChangeMe@468")
     for user, role in (("admin", "admin"), ("analyst", "analyst"), ("responder", "responder")):
         core.x(cfg, "INSERT OR IGNORE INTO users(username, role, password) VALUES (?,?,?)",
                (user, role, core.hash_password(pw)))
@@ -244,7 +244,7 @@ def cmd_risk(a):
 
 
 def main():
-    p = argparse.ArgumentParser(description="AgroPeace management")
+    p = argparse.ArgumentParser(description="Zaman Lafiya management")
     s = p.add_subparsers(dest="cmd", required=True)
     s.add_parser("genkey", help="generate encryption and signing keys").set_defaults(fn=cmd_genkey)
     s.add_parser("init", help="create database, geography, NDVI, contacts, users").set_defaults(fn=cmd_init)

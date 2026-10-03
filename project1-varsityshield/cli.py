@@ -1,4 +1,4 @@
-"""UniGuard command line. Run `python cli.py --help`."""
+"""VarsityShield command line. Run `python cli.py --help`."""
 import argparse
 import getpass
 import json
@@ -22,7 +22,7 @@ def cmd_init(args):
     with open(CONFIG_PATH, encoding="utf-8") as fh:
         raw = json.load(fh)
     if "admin" not in raw["users"]:
-        pw = os.environ.get("UNIGUARD_ADMIN_PASSWORD") or "ChangeMe@468"
+        pw = os.environ.get("VSHIELD_ADMIN_PASSWORD") or "ChangeMe@468"
         raw["users"]["admin"] = {"role": "admin", "password": hash_password(pw)}
         raw["users"]["auditor"] = {"role": "viewer", "password": hash_password(pw)}
         with open(CONFIG_PATH, "w", encoding="utf-8") as fh:
@@ -94,7 +94,7 @@ def cmd_monitor(args):
 
 
 def main():
-    p = argparse.ArgumentParser(description="UniGuard: monitoring, backup and recovery for university ICT")
+    p = argparse.ArgumentParser(description="VarsityShield: monitoring, backup and recovery for university ICT")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("init", help="create repository, canaries and default users").set_defaults(fn=cmd_init)
     u = sub.add_parser("add-user", help="add or reset a dashboard user")

@@ -162,7 +162,7 @@ def outage():
             subprocess.call(["taskkill", "/F", "/PID", str(pid)])
         else:
             os.kill(pid, 9)
-        print(f"Killed student portal (pid {pid}). UniGuard should alert and restart it.")
+        print(f"Killed student portal (pid {pid}). VarsityShield should alert and restart it.")
     except OSError as exc:
         print("Could not stop portal:", exc)
 

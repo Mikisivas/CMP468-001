@@ -48,7 +48,7 @@ def init_repository(cfg):
         return False
     salt = os.urandom(16)
     keys = _derive(_passphrase(cfg), salt)
-    check = hmac.new(keys["mac"], b"uniguard-key-check", hashlib.sha256).hexdigest()
+    check = hmac.new(keys["mac"], b"varsityshield-key-check", hashlib.sha256).hexdigest()
     with open(info_path, "w") as fh:
         json.dump({"kdf": "scrypt", "n": 2 ** 15, "r": 8, "p": 1,
                    "salt": base64.b64encode(salt).decode(), "check": check,
@@ -66,7 +66,7 @@ def load_keys(cfg):
     with open(os.path.join(repo, KEYINFO)) as fh:
         info = json.load(fh)
     keys = _derive(_passphrase(cfg), base64.b64decode(info["salt"]))
-    check = hmac.new(keys["mac"], b"uniguard-key-check", hashlib.sha256).hexdigest()
+    check = hmac.new(keys["mac"], b"varsityshield-key-check", hashlib.sha256).hexdigest()
     if not hmac.compare_digest(check, info["check"]):
         raise SystemExit("Wrong backup passphrase. Refusing to continue.")
     return keys

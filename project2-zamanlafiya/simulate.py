@@ -1,5 +1,5 @@
 """Live demo feed for the defence. Sends signed GPS pings for moving herds and
-incident reports by SMS and USSD to a running AgroPeace server.
+incident reports by SMS and USSD to a running Zaman Lafiya server.
 
   python simulate.py --steps 40 --interval 2
 """
@@ -46,9 +46,9 @@ def main():
     ap.add_argument("--steps", type=int, default=40)
     ap.add_argument("--interval", type=float, default=2.0)
     a = ap.parse_args()
-    secret = os.environ.get("AGROPEACE_DEVICE_SECRET")
+    secret = os.environ.get("ZAMANLAFIYA_DEVICE_SECRET")
     if not secret:
-        raise SystemExit("Set AGROPEACE_DEVICE_SECRET (same value as the server).")
+        raise SystemExit("Set ZAMANLAFIYA_DEVICE_SECRET (same value as the server).")
     cfg = core.load_config()
     rnd = random.Random(3)
     guma_farm = next(z for z in core.zones(cfg, "farmland") if z["lga"] == "Guma")
@@ -58,12 +58,12 @@ def main():
     herds = [{"id": f"HERD-{i + 1:02d}", "t": i * 0.12, "heads": rnd.randint(60, 300)} for i in range(5)]
     herds[1]["rogue"] = True       # will walk into Guma farmland
     herds[3]["deviate"] = True     # will leave the stock route
-    sms = [("AP Guma CROP cattle destroyed yam farm near Yelwata", "08031110001"),
-           ("AP Agatu THREAT youths threaten herders at Obagaji market", "08031110002"),
-           ("AP Bokkos RUSTLE 40 cows stolen at night", "08031110003"),
-           ("AP Keana ROUTE farmers blocked access to river", "08031110004"),
-           ("AP Makurdi RUMOUR whatsapp message says attack coming", "08031110005"),
-           ("AP Guma ATTACK gunmen attacked farmers at Tse-Akaa", "08031110001")]
+    sms = [("ZL Guma CROP cattle destroyed yam farm near Yelwata", "08031110001"),
+           ("ZL Agatu THREAT youths threaten herders at Obagaji market", "08031110002"),
+           ("ZL Bokkos RUSTLE 40 cows stolen at night", "08031110003"),
+           ("ZL Keana ROUTE farmers blocked access to river", "08031110004"),
+           ("ZL Makurdi RUMOUR whatsapp message says attack coming", "08031110005"),
+           ("ZL Guma ATTACK gunmen attacked farmers at Tse-Akaa", "08031110001")]
     for step in range(a.steps):
         for h in herds:
             h["t"] = min(1.0, h["t"] + 0.01)

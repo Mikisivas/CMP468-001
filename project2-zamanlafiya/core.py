@@ -1,4 +1,4 @@
-"""AgroPeace core: storage, geospatial functions, risk engine, alerting and security."""
+"""Zaman Lafiya core: storage, geospatial functions, risk engine, alerting and security."""
 import base64
 import hashlib
 import hmac
@@ -17,7 +17,7 @@ from cryptography.fernet import Fernet, InvalidToken
 import geodata
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.environ.get("AGROPEACE_CONFIG", os.path.join(BASE_DIR, "config.json"))
+CONFIG_PATH = os.environ.get("ZAMANLAFIYA_CONFIG", os.path.join(BASE_DIR, "config.json"))
 _lock = threading.RLock()
 
 INCIDENT_TYPES = {
@@ -402,15 +402,15 @@ def compute_risk(cfg, now=None, store=True):
 # ---------------------------------------------------------------- alerts
 
 TEMPLATES = {
-    "en": "AgroPeace {level} RISK alert for {lga} LGA ({state}). Main drivers: {drivers}. "
+    "en": "Zaman Lafiya {level} RISK alert for {lga} LGA ({state}). Main drivers: {drivers}. "
           "Peace committee, traditional rulers and security agencies should act now. Reply SAFE or HELP.",
-    "ha": "Gargadi daga AgroPeace: hadarin rikici ya kai matakin {level} a karamar hukumar {lga} ({state}). "
+    "ha": "Gargadi daga Zaman Lafiya: hadarin rikici ya kai matakin {level} a karamar hukumar {lga} ({state}). "
           "Shugabannin al'umma da jami'an tsaro su dauki mataki yanzu. Ka kwantar da hankali.",
-    "pcm": "AgroPeace alert: wahala fit happen for {lga} LGA ({state}), risk level na {level}. "
+    "pcm": "Zaman Lafiya alert: wahala fit happen for {lga} LGA ({state}), risk level na {level}. "
            "Make una no carry law for hand. Leaders and security, una suppose act now.",
 }
 ENCROACH = {
-    "en": "AgroPeace geofence alert: herd {herd} entered {zone}. Herder leader please move cattle back to "
+    "en": "Zaman Lafiya geofence alert: herd {herd} entered {zone}. Herder leader please move cattle back to "
           "the stock route. Farmers: do not confront, the peace committee has been notified.",
     "ha": "Gargadi: garken shanu {herd} ya shiga gona ({zone}). Shugaban makiyaya ya mayar da shanun hanyar burti.",
     "pcm": "Alert: cow group {herd} don enter {zone}. Herder leader abeg comot the cows go back to cattle route. "
@@ -445,7 +445,7 @@ def _send_sms(cfg, phone, text):
     if not gw.get("enabled"):
         return  # demo mode: alerts are stored and shown on the dashboard only
     try:
-        body = json.dumps({"to": phone, "sms": text[:459], "from": gw.get("sender_id", "AgroPeace"),
+        body = json.dumps({"to": phone, "sms": text[:459], "from": gw.get("sender_id", "ZamanLafiya"),
                            "api_key": os.environ.get(gw["api_key_env"], "")}).encode()
         req = urllib.request.Request(gw["url"], data=body, headers={"Content-Type": "application/json"})
         urllib.request.urlopen(req, timeout=10).read()
@@ -479,7 +479,7 @@ def check_geofence(cfg, herd_id, lat, lon):
         d = distance_to_line_km(lat, lon, route[0]["geom"]["coordinates"])
         lga = nearest_lga(cfg, lat, lon)
         if d > cfg["alerts"]["route_deviation_km"] and lga:
-            msgs = {k: f"AgroPeace: herd {herd_id} is {d:.1f} km off the official stock route near {lga}."
+            msgs = {k: f"Zaman Lafiya: herd {herd_id} is {d:.1f} km off the official stock route near {lga}."
                     for k in TEMPLATES}
             if dispatch(cfg, lga, "Moderate", "route_deviation", msgs, f"dev:{herd_id}:{lga}"):
                 events.append({"type": "route_deviation", "km": round(d, 1), "lga": lga})
@@ -540,13 +540,13 @@ def set_verification(cfg, incident_id, verified, actor):
 
 
 def parse_sms(text):
-    """SMS format: AP <LGA> <TYPE> <optional description>
-    e.g. 'AP Guma CROP cows destroyed yam farm at Yelwata'."""
+    """SMS format: ZL <LGA> <TYPE> <optional description>
+    e.g. 'ZL Guma CROP cows destroyed yam farm at Yelwata'."""
     keywords = {"CROP": "crop_destruction", "RUSTLE": "cattle_rustling", "COW": "cattle_killing",
                 "THREAT": "threat", "RUMOUR": "rumour", "ROUTE": "blocked_route", "ATTACK": "armed_attack",
                 "KILL": "killing", "FLEE": "displacement"}
     parts = (text or "").strip().split()
-    if len(parts) < 3 or parts[0].upper() != "AP":
+    if len(parts) < 3 or parts[0].upper() != "ZL":
         return None
     # LGA names can have spaces: find the keyword position.
     for i in range(2, len(parts)):

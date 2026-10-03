@@ -2,7 +2,7 @@
 <div class="card" style="max-width:620px;margin:auto">
 <h2>Report an incident or early sign of conflict</h2>
 <p style="color:var(--muted)">Your phone number is encrypted and only used to follow up. Tick "anonymous" to leave it out.
-No smartphone? Send SMS: <b>AP &lt;LGA&gt; CROP &lt;details&gt;</b> or dial the USSD code.</p>
+No smartphone? Send SMS: <b>ZL &lt;LGA&gt; CROP &lt;details&gt;</b> or dial the USSD code.</p>
 <form method="post">
 <p><label>LGA</label><select name="lga" required>{% for l in lgas %}<option>{{ l }}</option>{% endfor %}</select></p>
 <p><label>What happened?</label><select name="type">{% for k,v in types.items() %}<option value="{{ k }}">{{ v[0] }}</option>{% endfor %}</select></p>
