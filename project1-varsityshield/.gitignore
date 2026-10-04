@@ -2,3 +2,4 @@ data/
 sample_data/
 __pycache__/
 restore_test/
+venv/

@@ -2,3 +2,6 @@ data/*.db*
 data/*.pkl*
 data/*.json
 __pycache__/
+keys.bat
+keys.sh
+venv/

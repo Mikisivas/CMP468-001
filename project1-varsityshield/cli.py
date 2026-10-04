@@ -80,6 +80,28 @@ def cmd_repair(args):
     print(json.dumps(backup_engine.repair_from_replicas(load_config(), actor="cli"), indent=2))
 
 
+def cmd_reset_demo(args):
+    """Delete demo data, backups and users so the demo can start fresh (handles read-only files)."""
+    import shutil
+    import stat
+    base = os.path.dirname(os.path.abspath(__file__))
+
+    def force(func, path, _):
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+
+    for d in ("data", "sample_data", "restore_test"):
+        p = os.path.join(base, d)
+        if os.path.isdir(p):
+            shutil.rmtree(p, onerror=force)
+    with open(CONFIG_PATH, encoding="utf-8") as fh:
+        raw = json.load(fh)
+    raw["users"] = {}
+    with open(CONFIG_PATH, "w", encoding="utf-8") as fh:
+        json.dump(raw, fh, indent=2)
+    print("Demo reset. Run SETUP.bat (or cli.py init) again.")
+
+
 def cmd_prune(args):
     print(json.dumps(backup_engine.prune(load_config(), actor="cli"), indent=2))
 
@@ -113,6 +135,7 @@ def main():
     r.add_argument("--clean", action="store_true", help="after in-place restore, delete *.locked files")
     r.set_defaults(fn=cmd_restore)
     sub.add_parser("repair", help="replace tampered objects using replica copies").set_defaults(fn=cmd_repair)
+    sub.add_parser("reset-demo", help="delete demo data, backups and users").set_defaults(fn=cmd_reset_demo)
     sub.add_parser("prune", help="apply retention policy").set_defaults(fn=cmd_prune)
     m = sub.add_parser("monitor", help="run monitoring checks")
     m.add_argument("--once", action="store_true")

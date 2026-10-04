@@ -26,6 +26,18 @@ def cmd_genkey(a):
     print(f'  $env:ZAMANLAFIYA_DATA_KEY="{k}"\n  $env:ZAMANLAFIYA_DEVICE_SECRET="{d}"\n  $env:ZAMANLAFIYA_SECRET_KEY="{s}"\n')
     print("Linux / macOS:")
     print(f"  export ZAMANLAFIYA_DATA_KEY='{k}'\n  export ZAMANLAFIYA_DEVICE_SECRET='{d}'\n  export ZAMANLAFIYA_SECRET_KEY='{s}'")
+    if a.save:
+        here = os.path.dirname(os.path.abspath(__file__))
+        if os.path.exists(os.path.join(here, "keys.bat")):
+            print("\nkeys.bat already exists. Keeping the old keys (new keys would make saved data unreadable).")
+            return
+        with open(os.path.join(here, "keys.bat"), "w") as fh:
+            fh.write(f"@echo off\nset ZAMANLAFIYA_DATA_KEY={k}\nset ZAMANLAFIYA_DEVICE_SECRET={d}\n"
+                     f"set ZAMANLAFIYA_SECRET_KEY={s}\n")
+        with open(os.path.join(here, "keys.sh"), "w") as fh:
+            fh.write(f"export ZAMANLAFIYA_DATA_KEY='{k}'\nexport ZAMANLAFIYA_DEVICE_SECRET='{d}'\n"
+                     f"export ZAMANLAFIYA_SECRET_KEY='{s}'\n")
+        print("\nSaved keys.bat (Windows) and keys.sh (Linux/macOS). Keep these files private.")
 
 
 def cmd_init(a):
@@ -246,7 +258,9 @@ def cmd_risk(a):
 def main():
     p = argparse.ArgumentParser(description="Zaman Lafiya management")
     s = p.add_subparsers(dest="cmd", required=True)
-    s.add_parser("genkey", help="generate encryption and signing keys").set_defaults(fn=cmd_genkey)
+    g = s.add_parser("genkey", help="generate encryption and signing keys")
+    g.add_argument("--save", action="store_true", help="write keys.bat and keys.sh")
+    g.set_defaults(fn=cmd_genkey)
     s.add_parser("init", help="create database, geography, NDVI, contacts, users").set_defaults(fn=cmd_init)
     h = s.add_parser("history", help="generate synthetic incident history for training")
     h.add_argument("--weeks", type=int, default=104)
